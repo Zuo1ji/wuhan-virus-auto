@@ -1,0 +1,6 @@
+requests
+json
+opencv-python
+pyecharts
+snapshot_phantomjs
+wxpy
