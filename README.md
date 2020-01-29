@@ -3,6 +3,15 @@
 
  爬取[丁香园](https://3g.dxy.cn/newh5/view/pneumonia)的数据，并使用[pyecharts](https://github.com/pyecharts/pyecharts)作地图，再使用[wxpy](https://github.com/youfou/wxpy)发送到指定群
 
+ # 安装
+ python3+
+ ```shell
+# 直接用pip安装
+$ pip install -r requirements.txt
+```
+其中pyecharts部分用到 [snapshot-phantomjs](http://pyecharts.org/#/zh-cn/render_images?id=snapshot-phantomjs)
+
+
  # 施工中
  (其实主要是不知道该写些啥……)
 
