@@ -128,4 +128,3 @@ if __name__ == "__main__":
     v=virusstr(targetProvinceName, additionProvinceName, gotProvinceName)
     s=v.getvirusstring()
     str1,str2=v.getvirusimg()
-    print(str2)
