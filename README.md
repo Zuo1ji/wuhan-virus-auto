@@ -17,3 +17,5 @@ $ pip install -r requirements.txt
 
  # 感谢
  项目从[武汉肺炎病患数据的 Bitbar 插件](https://github.com/Anthonyeef/wuhan-virus-bitbar-plugin)获得灵感
+ 
+ 另外由于[武汉肺炎疫情实时动态省市地图](https://github.com/wuhan2020/wuhan2020)写的太多了不是很想看
