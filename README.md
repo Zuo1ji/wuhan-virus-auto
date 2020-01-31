@@ -28,6 +28,7 @@ $ python wechat.py
 
  * 部分省无法生城地图
  * 地图图例中[视觉映射配置项](http://pyecharts.org/#/zh-cn/global_options?id=visualmapopts%ef%bc%9a%e8%a7%86%e8%a7%89%e6%98%a0%e5%b0%84%e9%85%8d%e7%bd%ae%e9%a1%b9)每一段的范围及文字的修改工作
+ * 世界地图国家名称显示问题
  * ……
 
  # （施工中）
