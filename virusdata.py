@@ -2,6 +2,7 @@ import requests
 import re
 import json
 import cv2
+from pypinyin import lazy_pinyin
 import pyecharts.options as opts
 from pyecharts.charts import Map
 from pyecharts.render import make_snapshot
@@ -9,16 +10,19 @@ from snapshot_phantomjs import snapshot
 from pyecharts.globals import ThemeType
 
 class virusstr:
-    def __init__(self, targetProvinceName, additionProvinceName, gotProvinceName, mapname="map", virusname="virus"):
+    def __init__(self, targetProvinceName, additionProvinceName, gotProvinceName, additionMapName, mapname="map", virusname="virus"):
         self.targetProvinceName=targetProvinceName
         self.additionProvinceName=additionProvinceName
         self.gotProvinceName=gotProvinceName
+        self.additionMapName=additionMapName
         self.mapname=mapname
         self.virusname=virusname
         self.s=''
         self.response = requests.get('https://3g.dxy.cn/newh5/view/pneumonia')
         self.response.encoding = 'utf-8'
-        
+        with open('cityname.json','r', encoding='UTF-8') as f:
+            self.cities=json.load(f)
+      
     def showProvinceInfo(self, province):
         provinceName = province.get('provinceShortName')
         provinceConfirmedCount = province.get('confirmedCount')
@@ -37,6 +41,37 @@ class virusstr:
                 self.s=self.s+'--'+cityDataStr
         self.s=self.s+'\n'
 
+    def replacestr(self, s, province):
+        s1=','.join(s)
+        for key,value in self.cities[province].items():
+            s2=s1.replace(key,value)
+            s1=s2
+        return(s1.split(','))
+
+    def getadditionMapName(self,province):
+        provincename=province.get("provinceShortName")
+        if provincename in self.additionMapName:
+            data1=[x["cityName"] for x in province["cities"]]
+            data2=[x["confirmedCount"] for x in province["cities"]]
+            data=[list(z) for z in zip(self.replacestr(data1,provincename),data2)]
+            c = (
+                Map(init_opts=opts.InitOpts(width="1000px", height="600px"))
+                .add(provincename+"肺炎地图", data_pair=data, maptype=provincename, is_map_symbol_show=False)
+                .set_global_opts(
+                    visualmap_opts=opts.VisualMapOpts(
+                        is_piecewise=True,
+                        pieces=[
+                            {"min": 50, "label": ">50", "color": "#731919"},
+                            {"min": 10, "max": 50, "label": "10 - 50", "color": "#9c2f31"},
+                            {"min": 5, "max": 9, "label": "5 - 9", "color": "#c34548"},
+                            {"min": 0, "max": 4, "label": "1 - 4", "color": "#e26061"},
+                        ]
+                        ),
+                    legend_opts=opts.LegendOpts(is_show=False)
+                    )
+            )
+            c.render(''.join(lazy_pinyin(provincename))+"virusmap.html")
+
     def getvirusstring(self):
         rawresult = re.search('<script id="getAreaStat">(.*)</script>', self.response.text)
         provincedata = re.search('\[.*\]', rawresult.group(1)).group(0).split('catch')
@@ -44,15 +79,13 @@ class virusstr:
         finalresult = provincedata[0]
         finalresult = finalresult[0:-1]
 
-        jsondata = json.loads(finalresult)
-        
-        self.makevirusmap(jsondata)
+        self.jsondata = json.loads(finalresult)
 
         chinaConfirmCount = 0
         chinaCuredCount = 0
         chinaDeadCount = 0
 
-        for province in jsondata:
+        for province in self.jsondata:
             chinaConfirmCount += province.get('confirmedCount')
             chinaDeadCount += province.get('deadCount')
             chinaCuredCount += province.get('curedCount')
@@ -62,21 +95,29 @@ class virusstr:
         self.s=self.s+displayString+'---\n\n'
 
         if self.targetProvinceName is 0:
-            for province in jsondata:
+            for province in self.jsondata:
                 self.showProvinceInfo(province)
         else:
             for index in range(self.targetProvinceName):
-                province = jsondata[index]
+                province = self.jsondata[index]
                 self.showProvinceInfo(province)
+        
+        if len(self.additionMapName) > 0:
+            for province in self.jsondata:
+                self.getadditionMapName(province)
 
-        for province in jsondata:
+        for province in self.jsondata:
             provinceName = province.get('provinceShortName')
             if (provinceName in self.additionProvinceName) and (self.targetProvinceName != 0):
                 self.showProvinceInfo(province)
-        
         return self.s
 
     def getvirusimg(self):
+        try:
+            self.makevirusmap(self.jsondata)
+        except:
+            self.getvirusstring
+            self.makevirusmap(self.jsondata)
         rawresult = re.search('<script id="getStatisticsService">(.*"abroadRemark":""\}\}catch\(e\)\{\})</script>', self.response.text)
         StatisticsService = re.search('window.getStatisticsService = (.*)}catch', rawresult.group(1))
         jsondata1 = json.loads(StatisticsService.group(1))
@@ -86,9 +127,9 @@ class virusstr:
             f.write(img)
         return self.virusname+".png", self.mapname+".png"
 
-    def makevirusmap(self,jsondata):
+    def makevirusmap(self,jsondata1):
         data =[
-            [[x["provinceShortName"], x["confirmedCount"]] for x in jsondata]
+            [[x["provinceShortName"], x["confirmedCount"]] for x in jsondata1]
         ][0]
         c = (
             Map(init_opts=opts.InitOpts(width="600px", height="400px",theme=ThemeType.ROMA))
@@ -125,6 +166,10 @@ if __name__ == "__main__":
     # 如果不填则不会展示
     gotProvinceName = {"湖北","四川"}
 
-    v=virusstr(targetProvinceName, additionProvinceName, gotProvinceName)
+    # 想看的详细地图的省份
+    # 如果不填则不会展示
+    additionMapName = {"四川"}
+
+    v=virusstr(targetProvinceName, additionProvinceName, gotProvinceName, additionMapName)
     s=v.getvirusstring()
     str1,str2=v.getvirusimg()
