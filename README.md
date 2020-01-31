@@ -2,12 +2,12 @@
  武汉肺炎病患数据+地图+趋势图
 
  爬取[丁香园](https://3g.dxy.cn/newh5/view/pneumonia)的数据，并使用[pyecharts](https://github.com/pyecharts/pyecharts)作地图，再使用[wxpy](https://github.com/youfou/wxpy)发送到指定微信群
- ![Image](.\images\map.png)
+ ![Image](/images/map.png)
 
- ![Image](.\images\virus.png)
+ ![Image](/images/virus.png)
 
  会根据参数选择不同，生成不同的省市地图：
- ![Image](.\images\sichuanvirusmap.png)
+ ![Image](/images/sichuanvirusmap.png)
 
  # 安装
  python 3.7+
