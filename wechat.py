@@ -1,6 +1,8 @@
 from wxpy import *
 import time
 from virusdata import virusstr
+from pypinyin import lazy_pinyin
+import emoji
 
 # 填写想看到的确诊人数前n的省份
 # 如果填0表示全部看
@@ -23,4 +25,14 @@ s=v.getvirusstring()
 str1,str2=v.getvirusimg()
 
 bot = Bot()
+
+my21 = bot.groups().search('123321')[0]
+
+my21.send(s)
+my21.send_image(str1)
+my21.send_image(str2)
+if len(additionMapName) > 0:
+    for i in additionMapName:
+        my21.send_image(''.join(lazy_pinyin(i))+"virusmap.png")
+
 
