@@ -10,6 +10,9 @@
  会根据参数选择不同，生成不同的省市地图：
  ![Image](/images/sichuanvirusmap.png)
 
+ 会生成世界地图：
+ ![Image](/images/world.png)
+
  # 安装
  python 3.7+
  ```shell
