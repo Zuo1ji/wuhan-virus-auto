@@ -2,6 +2,7 @@ import requests
 import re
 import json
 import cv2
+import os
 from pypinyin import lazy_pinyin
 import pyecharts.options as opts
 from pyecharts.charts import Map
@@ -76,6 +77,8 @@ class virusstr:
             make_snapshot(snapshot,c.render(''.join(lazy_pinyin(provincename))+"virusmap.html"), "dst1.png")
             img=cv2.imread("dst1.png",cv2.IMREAD_UNCHANGED)
             cv2.imwrite(''.join(lazy_pinyin(provincename))+"virusmap.png", img, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+            if(os.path.exists("dst1.png")):
+                os.remove("dst1.png")
     
     def getWorldMap(self):
         rawresult = re.search('<script id="getListByCountryTypeService2">(.*)</script>', self.response.text)
@@ -110,6 +113,8 @@ class virusstr:
         make_snapshot(snapshot, c.render("world.html"), "dst2.png")
         img=cv2.imread("dst2.png",cv2.IMREAD_UNCHANGED)
         cv2.imwrite("world.png", img, [int(cv2.IMWRITE_PNG_COMPRESSION), 7])
+        if(os.path.exists("dst2.png")):
+            os.remove("dst2.png")
         return "world.png"
         
     def getvirusstring(self):
@@ -191,6 +196,8 @@ class virusstr:
         make_snapshot(snapshot, c.render(self.mapname+".html"), "dst.png")
         img=cv2.imread("dst.png",cv2.IMREAD_UNCHANGED)
         cv2.imwrite(self.mapname+".png", img, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+        if(os.path.exists("dst.png")):
+            os.remove("dst.png")
 
 if __name__ == "__main__":
     # 填写想看到的确诊人数前n的省份
