@@ -14,7 +14,7 @@ additionProvinceName = {"四川"}
 
 # 想看的详细城市的省份
 # 如果不填则不会展示
-gotProvinceName = {"湖北","四川"}
+gotProvinceName = {"四川"}
 
 # 想看的详细地图的省份
 # 如果不填则不会展示
@@ -26,16 +26,15 @@ str1,str2=v.getvirusimg()
 str3=v.getWorldMap()
 
 bot = Bot()
-
 my21 = bot.groups().search('2013级21班')[0]
 
 my21.send(s)
 my21.send_image(str1)
-my21.send_image(str2)
 my21.send_image(str3)
+for i in str1:
+    my21.send_image(i)
 if len(additionMapName) > 0:
     for i in additionMapName:
         my21.send_image(''.join(lazy_pinyin(i))+"virusmap.png")
 my21.send('----------')
 my21.send(emoji.emojize('*来自:cloud:鱼昆的自动提醒*'))
-

@@ -65,10 +65,10 @@ class virusstr:
                     visualmap_opts=opts.VisualMapOpts(
                         is_piecewise=True,
                         pieces=[
-                            {"min": 50, "label": ">50", "color": "#731919"},
-                            {"min": 10, "max": 50, "label": "10 - 50", "color": "#9c2f31"},
-                            {"min": 5, "max": 9, "label": "5 - 9", "color": "#c34548"},
-                            {"min": 0, "max": 4, "label": "1 - 4", "color": "#e26061"},
+                            {"min": 50.5, "label": ">50", "color": "#731919"},
+                            {"min": 9.5, "max": 50.5, "label": "10 - 50", "color": "#9c2f31"},
+                            {"min": 4.5, "max": 9.5, "label": "5 - 9", "color": "#c34548"},
+                            {"min": 0, "max": 4.5, "label": "1 - 4", "color": "#e26061"},
                         ]
                         ),
                     legend_opts=opts.LegendOpts(is_show=False)
@@ -93,8 +93,8 @@ class virusstr:
         data.append(['China',self.chinaConfirmCount])
 
         c = (
-            Map(init_opts=opts.InitOpts(width="1600px", height="900px"))
-            .add("商家A", data_pair=data, maptype="world", is_map_symbol_show=False)
+            Map(init_opts=opts.InitOpts(width="600px", height="400px"))
+            .add("", data_pair=data, maptype="world", is_map_symbol_show=False)
             .set_series_opts(label_opts=opts.LabelOpts(is_show=False))
             .set_global_opts(
                 visualmap_opts=opts.VisualMapOpts(
@@ -112,7 +112,7 @@ class virusstr:
         )
         make_snapshot(snapshot, c.render("world.html"), "dst2.png")
         img=cv2.imread("dst2.png",cv2.IMREAD_UNCHANGED)
-        cv2.imwrite("world.png", img, [int(cv2.IMWRITE_PNG_COMPRESSION), 7])
+        cv2.imwrite("world.png", img, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
         if(os.path.exists("dst2.png")):
             os.remove("dst2.png")
         return "world.png"
@@ -162,14 +162,19 @@ class virusstr:
         except:
             self.getvirusstring
             self.makevirusmap(self.jsondata)
-        rawresult = re.search('<script id="getStatisticsService">(.*"abroadRemark":""\}\}catch\(e\)\{\})</script>', self.response.text)
+
+        rawresult = re.search('<script id="getStatisticsService">(.*"marquee":\[\]\}\}catch\(e\)\{\})</script>', self.response.text)
         StatisticsService = re.search('window.getStatisticsService = (.*)}catch', rawresult.group(1))
         jsondata1 = json.loads(StatisticsService.group(1))
-        virusimg=requests.get(jsondata1.get("dailyPic"))
-        img = virusimg.content
-        with open(self.virusname+".png","wb") as f:
-            f.write(img)
-        return self.virusname+".png", self.mapname+".png"
+        virusimgurl=jsondata1["dailyPic"].split(',')
+        li=[]
+        for i in range(len(virusimgurl)):
+            li.append([self.virusname+str(i)+".png"])
+            virusimg=requests.get(virusimgurl[i])
+            img = virusimg.content
+            with open(self.virusname+str(i)+".png","wb") as f:
+                f.write(img)
+        return li, self.mapname+".png"
 
     def makevirusmap(self,jsondata1):
         data =[
@@ -177,7 +182,7 @@ class virusstr:
         ][0]
         c = (
             Map(init_opts=opts.InitOpts(width="600px", height="400px",theme=ThemeType.ROMA))
-            .add("商家A", data_pair=data, maptype="china", is_map_symbol_show=False)
+            .add("", data_pair=data, maptype="china", is_map_symbol_show=False)
             .set_global_opts(
                 visualmap_opts=opts.VisualMapOpts(
                     is_piecewise=True,
@@ -221,3 +226,4 @@ if __name__ == "__main__":
     str1,str2=v.getvirusimg()
     str3=v.getWorldMap()
     print(s)
+    print(str1)
