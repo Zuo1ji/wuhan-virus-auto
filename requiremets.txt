@@ -4,3 +4,5 @@ opencv-python
 pyecharts
 snapshot_phantomjs
 wxpy
+pypinyin
+emoji
